@@ -111,7 +111,7 @@ public class GamePanel extends JPanel {
 								ValidasiMap.map[select.y][select.x] = ValidasiMap.map[click.y][click.x];
 								ValidasiMap.map[select.y][select.x].setPoint(select);
 								ValidasiMap.map[select.y][select.x].setStep(+1);
-								;
+								
 								ValidasiMap.map[click.y][click.x] = null;// menghapus pion yang dimakan dari array 2d
 								// mengganti giliran jalan
 								if (colorTurn == Color.WHITE) {
@@ -145,7 +145,7 @@ public class GamePanel extends JPanel {
 					if (ValidasiMap.map[i][j] != null)
 						System.out.printf("%5s|", ValidasiMap.map[i][j].getName());
 					else
-						System.out.printf("      ");
+						System.out.printf("  null");
 				} catch (Exception e2) {
 
 				}
