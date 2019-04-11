@@ -42,10 +42,16 @@ public class King extends Bidak {
 		// TODO Auto-generated method stub
 		super.setPoint(point);
 	}
-	@Override
-	public boolean legalMove(Point point) {
-		// TODO Auto-generated method stub
-		if(ValidasiMap.map[point.x][point.y].getColor().equals(getColor()))return false;
-		else return true;
-	}
+//	@Override
+//	public boolean legalMove(Point p) {
+//		System.out.println(p.x + " " + p.y);
+//		// TODO Auto-generated method stub
+//		try {
+//			if (ValidasiMap.map[p.y][p.x].getColor().equals(this.getColor()))
+//				return false;
+//		} catch (Exception e) {
+//
+//		}
+//		return true;
+//	}
 }
