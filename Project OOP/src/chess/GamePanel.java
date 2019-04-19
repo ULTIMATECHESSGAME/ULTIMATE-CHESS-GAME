@@ -30,10 +30,10 @@ public class GamePanel extends JPanel {
 	private Double player1Time = 0.0;
 	private Double player2Time = 0.0;
 	private Double time = 0.0;
-	private Long timeDisplayMinute = (long) 0;
-	private Long timeDisplaySecond = (long) 0;
-	private Long timeDisplay2Minute = (long) 0;
-	private Long timeDisplay2Second = (long) 0;
+	private Integer timeDisplayMinute = 0;
+	private Integer timeDisplaySecond = 0;
+	private Integer timeDisplay2Minute = 0;
+	private Integer timeDisplay2Second = 0;
 	private long start = 0;
 	private long stop = 0;
 	private boolean flag = false;
@@ -76,14 +76,14 @@ public class GamePanel extends JPanel {
 		public void mouseClicked(MouseEvent e) {
 			// TODO Auto-generated method stub
 			Point current = e.getPoint();
-
+			System.out.println(current);
 			// memeriksa apakah kotak yang dipilih berada didalam papan catur
 			if (BOUND.contains(current)) {
 				Point select = new Point((current.x - resize) / SIZE, (current.y - resize) / SIZE);
 				// validasi giliran jalan pemain
 				try {
 					if (!ValidasiMap.map[select.y][select.x].getColor().equals(colorTurn) && click == null) {
-						System.out.println(false);
+//						System.out.println(false);
 						return;
 
 					}
@@ -100,6 +100,8 @@ public class GamePanel extends JPanel {
 
 						try {
 							if (ValidasiMap.map[click.y][click.x].legalMove(select, click)) {// validasi legal move
+								// rokade
+								rokade(select, click);
 
 								for (Player player : playerList) {
 									if (!player.getPlayerColor().equals(colorTurn)
@@ -111,7 +113,7 @@ public class GamePanel extends JPanel {
 								ValidasiMap.map[select.y][select.x] = ValidasiMap.map[click.y][click.x];
 								ValidasiMap.map[select.y][select.x].setPoint(select);
 								ValidasiMap.map[select.y][select.x].setStep(+1);
-								
+
 								ValidasiMap.map[click.y][click.x] = null;// menghapus pion yang dimakan dari array 2d
 								// mengganti giliran jalan
 								if (colorTurn == Color.WHITE) {
@@ -128,6 +130,9 @@ public class GamePanel extends JPanel {
 
 						}
 						// untuk debug di console
+						assignBolean();
+						debugBoleanBlack();
+						debugBoleanWhite();
 						consoleDebug();
 						click = null;
 					}
@@ -137,6 +142,26 @@ public class GamePanel extends JPanel {
 
 		}
 	};
+
+	public void rokade(Point select, Point click) {
+		int[] AlBenteng = { 0, 0, 7, 0, 0, 7, 7, 7 };
+		int[] RBenteng = { 3, 0, 5, 0, 3, 7, 5, 7 };
+		int[] RokadeRaja = { 2, 0, 6, 0, 2, 7, 6, 7 };
+
+		if (ValidasiMap.map[click.y][click.x] instanceof King && Math.abs(click.x - select.x) == 2) {
+			King a = (King) ValidasiMap.map[click.y][click.x];
+			if (!a.isRokade()) {
+				for (int i = 0; i < 8; i += 2) {
+					if (select.x == RokadeRaja[i] && select.y == RokadeRaja[i + 1]) {
+						ValidasiMap.map[RBenteng[i + 1]][RBenteng[i]] = ValidasiMap.map[AlBenteng[i + 1]][AlBenteng[i]];
+						ValidasiMap.map[RBenteng[i + 1]][RBenteng[i]].setPoint(new Point(RBenteng[i], RBenteng[i + 1]));
+						ValidasiMap.map[AlBenteng[i + 1]][AlBenteng[i]] = null;
+						a.setRokade(true);
+					}
+				}
+			}
+		}
+	}
 
 	public void consoleDebug() {
 		for (int i = 0; i < 8; i++) {
@@ -169,6 +194,7 @@ public class GamePanel extends JPanel {
 		colorTurn = Color.WHITE;
 		consoleDebug();
 		startTime();
+		new Picture();
 		th.start();
 	}
 
@@ -178,8 +204,7 @@ public class GamePanel extends JPanel {
 		Bidak kingWhite = new King(new Point(4, 7), "KingW", Color.WHITE, true, new ImageIcon("rajaPutih.png"));
 		Bidak queenWhite = new Queen(new Point(3, 7), "QuenW", Color.WHITE, true, new ImageIcon("menteriPutih.png"));
 		Bidak KnightWhite = new Knight(new Point(1, 7), "KnightW", Color.WHITE, true, new ImageIcon("kudaPutih.png"));
-		Bidak KnightWhite2 = new Knight(new Point(6, 7), "KnightW", Color.WHITE, true,
-				new ImageIcon("kudaPutih.png"));
+		Bidak KnightWhite2 = new Knight(new Point(6, 7), "KnightW", Color.WHITE, true, new ImageIcon("kudaPutih.png"));
 		Bidak rookWhite = new Rook(new Point(0, 7), "RookW", Color.WHITE, true, new ImageIcon("bentengPutih.png"));
 		Bidak rookWhite2 = new Rook(new Point(7, 7), "RookW", Color.WHITE, true, new ImageIcon("bentengPutih.png"));
 		Bidak bishopWhite = new Bishop(new Point(2, 7), "BishopW", Color.WHITE, true, new ImageIcon("seluncur.png"));
@@ -218,7 +243,7 @@ public class GamePanel extends JPanel {
 				ValidasiMap.map[i][j] = null;
 			}
 		}
-		
+
 		ValidasiMap.map[0][0] = rookBlack;
 		ValidasiMap.map[0][1] = KnightBlack;
 		ValidasiMap.map[0][2] = bishopBlack;
@@ -251,7 +276,67 @@ public class GamePanel extends JPanel {
 		ValidasiMap.map[6][5] = pawnWhite6;
 		ValidasiMap.map[6][6] = pawnWhite7;
 		ValidasiMap.map[6][7] = pawnWhite8;
+		assignBolean();
+		debugBoleanBlack();
+		debugBoleanWhite();
+	}
+	
+	public void assignBoleanfalse(Boolean [][] temp) {
+		for (int i = 0; i < 8; i++) {
+			for (int j = 0; j < 8; j++) {
+				temp[i][j] = false;
+			}
+		}
+	}
+	
+	public void assignBolean() {
+		assignBoleanfalse(MapW.map);
+		assignBoleanfalse(MapB.map);
+		for (int i = 0; i < 8; i++) {
+			for (int j = 0; j < 8; j++) {
+				if (ValidasiMap.map[i][j] == null)
+					continue;
+				if (ValidasiMap.map[i][j].getColor().equals(Color.BLACK)) {
+					MapB.map[i][j] = true;
+					ValidasiMap.map[i][j].predictedMove(new Point(j, i));
+					for (Point point : ValidasiMap.map[i][j].getPointsLegalMove()) {
+						MapB.map[point.y][point.x] = true;
+					}
+				} else {
+					MapW.map[i][j] = true;
+					ValidasiMap.map[i][j].predictedMove(new Point(j, i));
+					for (Point point : ValidasiMap.map[i][j].getPointsLegalMove()) {
+						MapW.map[point.y][point.x] = true;
+					}
+				}
+			}
+		}
 
+	}
+
+	public void debugBoleanBlack() {
+		for (int i = 0; i < 8; i++) {
+			for (int j = 0; j < 8; j++) {
+				if (MapB.map[i][j] != null && MapB.map[i][j])
+					System.out.print(j + " ");
+				else
+					System.out.print(". ");
+			}
+			System.out.println("");
+		}
+		System.out.println("");
+	}
+
+	public void debugBoleanWhite() {
+		for (int i = 0; i < 8; i++) {
+			for (int j = 0; j < 8; j++) {
+				if (MapW.map[i][j] != null && MapW.map[i][j])
+					System.out.print(i + " ");
+				else
+					System.out.print(". ");
+			}
+			System.out.println("");
+		}
 	}
 
 	@Override
@@ -259,13 +344,14 @@ public class GamePanel extends JPanel {
 		// TODO Auto-generated method stub
 		super.paint(g);
 
-//		g.drawImage(Picture.getBg().getImage(), 0, 0, 1360, 720, null);
-//		g.drawImage(Picture.getTable().getImage(), resize -40 , resize-40 , 580, 580, null);
+		g.drawImage(Picture.getBg().getImage(), 0, 0, 1360, 720, null);
+		g.drawImage(Picture.getTable().getImage(), resize - 40, resize - 40, 580, 580, null);
+
 		for (int i = 0; i < BLOCK; i++) {
 			for (int j = 0; j < BLOCK; j++) {
 
-				if (click != null && click.equals(new Point(j, i))) {
-					ValidasiMap.map[i][j].predictedMove(g, ValidasiMap.map[i][j].getPoint());
+				if (click != null && click.equals(new Point(j, i)) && ValidasiMap.map[i][j] != null) {
+					ValidasiMap.map[i][j].DrawpredictedMove(g, ValidasiMap.map[i][j].getPoint());
 				}
 
 				if (ValidasiMap.map[i][j] != null) {
@@ -275,31 +361,34 @@ public class GamePanel extends JPanel {
 				}
 			}
 		}
-	
+
 		if (flag && colorTurn.equals(Color.WHITE)) {
-			timeDisplayMinute = TimeUnit.SECONDS.toMinutes((long) (player1Time + ((System.currentTimeMillis() - start) / 1000.0)));
-			timeDisplaySecond = (long) (player1Time + ((System.currentTimeMillis() - start) / 1000.0)) % 60;
+			timeDisplayMinute = (int) TimeUnit.SECONDS
+					.toMinutes((long) (player1Time + ((System.currentTimeMillis() - start) / 1000.0)));
+			timeDisplaySecond = (int) ((long) (player1Time + ((System.currentTimeMillis() - start) / 1000.0)) % 60);
 
 		} else {
-			timeDisplay2Minute = TimeUnit.SECONDS.toMinutes((long) (player2Time + ((System.currentTimeMillis() - start) / 1000.0)));
-			timeDisplay2Second = (long) (player2Time + ((System.currentTimeMillis() - start) / 1000.0)) % 60;
+			timeDisplay2Minute = (int) TimeUnit.SECONDS
+					.toMinutes((long) (player2Time + ((System.currentTimeMillis() - start) / 1000.0)));
+			timeDisplay2Second = (int) ((long) (player2Time + ((System.currentTimeMillis() - start) / 1000.0)) % 60);
 		}
 		g.setFont(Font.getFont(TOOL_TIP_TEXT_KEY));
 		g.setColor(Color.BLACK);
 		g.drawString(timeDisplayMinute.toString() + " : " + timeDisplaySecond.toString(), 700, 600);
-		g.drawString(timeDisplay2Minute.toString() + " : " + timeDisplay2Second.toString(), 700, 100);
-		g.drawImage(Picture.getNumber().getImage(), 700, 400, 100, 100, null);
+		g.drawImage(Picture.getNumber(timeDisplay2Minute % 10), 700, 100, 350 / 6, 100, null);
+		g.drawImage(Picture.getNumber(timeDisplay2Minute / 10), 650, 100, 350 / 6, 100, null);
+		g.drawImage(new ImageIcon("number/pemisah.png").getImage(), 745, 100, 350 / 6, 100, null);
+		g.drawImage(Picture.getNumber(timeDisplay2Second % 10), 840, 100, 350 / 6, 100, null);
+		g.drawImage(Picture.getNumber(timeDisplay2Second / 10), 790, 100, 350 / 6, 100, null);
 		int count = 40, count2 = 40;
 		for (Player player : playerList) {
 			for (Bidak bidak : player.getBidakList()) {
 				if (bidak == null)
 					break;
 				if (player.getPlayerColor().equals(Color.BLACK)) {
-//					g.drawImage(new ImageIcon("Shadow.png").getImage(), count + 10, 30, SIZE - 20, SIZE -20, null);
 					g.drawImage(bidak.getImg().getImage(), count, 620, SIZE, SIZE, null);
 					count += 40;
 				} else {
-//					g.drawImage(new ImageIcon("Shadow.png").getImage(), count + 10, 650, SIZE, SIZE, null);
 					g.drawImage(bidak.getImg().getImage(), count2, 0, SIZE, SIZE, null);
 					count2 += 40;
 				}
@@ -324,5 +413,11 @@ public class GamePanel extends JPanel {
 
 		}
 	});
+
+	public Graphics displayTime(Graphics p) {
+		int a = timeDisplay2Second;
+
+		return p;
+	}
 
 }
