@@ -3,24 +3,36 @@ package chess;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Point;
+import java.util.Vector;
 
 import javax.swing.ImageIcon;
 
 import com.sun.prism.paint.Paint;
 
-public class Bidak {
-	protected final int RESIZE = (720/8);
-	protected final int SIZE = 500/8;
+public abstract class Bidak {
+	protected final int RESIZE = (720 / 8);
+	protected final int SIZE = 500 / 8;
 	protected Point point;
 	protected String name;
 	protected Color color;
 	protected boolean active;
 	protected ImageIcon img;
 	protected int step = 0;
+	
+	public Vector<Point> getPointsLegalMove() {
+		return pointsLegalMove;
+	}
+
+	public void setPointsLegalMove(Vector<Point> pointsLegalMove) {
+		this.pointsLegalMove = pointsLegalMove;
+	}
+
+	protected Vector<Point>pointsLegalMove = new Vector<Point>();
+	
 	public String getName() {
 		return name;
 	}
-	
+
 	public Color getColor() {
 		return color;
 	}
@@ -33,11 +45,7 @@ public class Bidak {
 		return img;
 	}
 
-	public boolean legalMove(Point selected, Point click) {
-
-		return true;
-	}
-
+	public abstract boolean legalMove(Point click, Point selected);
 
 	public int getStep() {
 		return step;
@@ -63,6 +71,7 @@ public class Bidak {
 		this.active = isActive;
 		this.img = img;
 	}
+
 	public Bidak(Bidak bidak) {
 		this.point = bidak.point;
 		this.name = bidak.name;
@@ -70,6 +79,7 @@ public class Bidak {
 		this.active = bidak.active;
 		this.img = bidak.img;
 	}
+
 	public Bidak() {
 		// TODO Auto-generated constructor stub
 	}
@@ -89,16 +99,7 @@ public class Bidak {
 	public void setImg(ImageIcon img) {
 		this.img = img;
 	}
-	
-	public Graphics predictedMove(Graphics paint, Point p) {
-//		paint.setColor(Color.blue);
-//		paint.fillRect(p.x, p.y, 500/8, 500/8);
-//		paint.fillRect(p.x + 1, p.y, 500/8, 500/8);
-		
-		
-//		paint.drawRect(0,0, 100, 100);
-		return paint;
-	}
-	
 
+	public abstract Graphics DrawpredictedMove(Graphics paint, Point p);
+	public abstract void predictedMove( Point selected);
 }

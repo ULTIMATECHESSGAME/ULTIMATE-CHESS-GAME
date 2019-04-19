@@ -94,19 +94,29 @@ public class Pawn extends Bidak {
 
 		return true;
 	}
-
+	
 	@Override
-	public Graphics predictedMove(Graphics paint, Point p) {
+	public void predictedMove(Point selected) {
 		// TODO Auto-generated method stub
-		paint.setColor(Color.RED);
+		pointsLegalMove.removeAllElements();
 		for (int i = 0; i < 8; i++) {
 			for (int j = 0; j < 8; j++) {
-				if(legalMove(new Point(j, i), p)) {
-					paint.drawRect(j * SIZE + RESIZE, i * SIZE + RESIZE, 500 / 8, 500 / 8);
+				if(legalMove(new Point(j, i), selected)) {
+				pointsLegalMove.add(new Point(j,i));
 				}
 			}
 		}
-		
+	}
+	
+	@Override
+	public Graphics DrawpredictedMove(Graphics paint, Point p) {
+		// TODO Auto-generated method stub
+		paint.setColor(Color.RED);
+		predictedMove(p);
+		for (Point point : pointsLegalMove) {
+			paint.drawRect(point.x * SIZE + RESIZE, point.y * SIZE + RESIZE, 500 / 8, 500 / 8);
+			
+		}
 		return paint;
 	}
 
